@@ -78,6 +78,10 @@ public class DataServiceClient implements DataServiceClientService {
         executor
           .executeQuery( new DataOutputStream( byteArrayOutputStream ) )
           .waitUntilFinished();
+
+        if ( executor.hasErrors() ) {
+          throw new SQLException( "There were errors in the execution of this SQL." );
+        }
       }
 
       ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream( byteArrayOutputStream.toByteArray() );
@@ -91,10 +95,13 @@ public class DataServiceClient implements DataServiceClientService {
     return dataInputStream;
   }
 
+  @Override public void cancelQuery( String executorId ) {
+  }
+
   public void writeDummyRow( SQL sql, DataOutputStream dos ) throws Exception {
     sql.setServiceName( DUMMY_TABLE_NAME );
 
-    DataServiceExecutor.writeMetadata( dos, new String[] { DUMMY_TABLE_NAME, "", "", "", "" } );
+    DataServiceExecutor.writeMetadata( dos, new String[] { DUMMY_TABLE_NAME, "", "", "", "", "" } );
 
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "DUMMY" ) );

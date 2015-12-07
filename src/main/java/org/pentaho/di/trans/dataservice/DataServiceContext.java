@@ -35,7 +35,10 @@ import org.pentaho.di.trans.dataservice.serialization.DataServiceMetaStoreUtil;
 import org.pentaho.di.trans.dataservice.ui.DataServiceDelegate;
 import org.pentaho.di.trans.dataservice.ui.UIFactory;
 
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DataServiceContext {
   private final DataServiceMetaStoreUtil metaStoreUtil;
@@ -44,6 +47,7 @@ public class DataServiceContext {
   private final List<PushDownFactory> pushDownFactories;
   private final LogChannelInterface logChannel;
   private final UIFactory uiFactory;
+  private final Map<String, DataServiceExecutor> executors = new ConcurrentHashMap<>();
 
   public DataServiceContext( List<PushDownFactory> pushDownFactories,
                              List<AutoOptimizationService> autoOptimizationServices,
@@ -107,5 +111,17 @@ public class DataServiceContext {
 
   public DataServiceClient createLocalClient() {
     return new DataServiceClient( getDataServiceDelegate() );
+  }
+
+  public synchronized void addDataServiceExecutor( DataServiceExecutor dataServiceExecutor ) {
+    executors.put( dataServiceExecutor.getId(), dataServiceExecutor );
+  }
+
+  public synchronized DataServiceExecutor getDataServiceExecutor( String executorId ) {
+    return executors.get( executorId );
+  }
+
+  public synchronized void remoteDataServiceExecutor( DataServiceExecutor dataServiceExecutor ) {
+    executors.remove( dataServiceExecutor );
   }
 }

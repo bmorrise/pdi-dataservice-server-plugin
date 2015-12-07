@@ -28,6 +28,11 @@
         <pen:di-plugin type="org.pentaho.di.core.plugins.CartePluginType"/>
     </bean>
 
+    <bean id="stopExecutorServlet" class="org.pentaho.di.trans.dataservice.www.StopExecutorServlet" scope="singleton">
+        <argument ref="context"/>
+        <pen:di-plugin type="org.pentaho.di.core.plugins.CartePluginType"/>
+    </bean>
+
     <bean id="dataServiceStepPlugin" scope="singleton" class="org.pentaho.di.trans.dataservice.ui.menu.DataServiceStepPlugin">
         <argument ref="context"/>
         <pen:di-plugin type="org.pentaho.di.ui.spoon.SpoonPluginType"/>

@@ -67,9 +67,11 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
 
   public static final String CONTEXT_PATH = "/sql";
   private final DataServiceClient client;
+  private final DataServiceContext context;
 
   public TransDataServlet( DataServiceContext context ) {
     this.client = context.createClient( new ServletRepositoryAdapter( this ) );
+    this.context = context;
   }
 
   public void doPut( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
@@ -113,6 +115,9 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
             parameters( parameters ).
             rowLimit( maxRows ).
             build();
+
+        context.addDataServiceExecutor( executor );
+
         response.setStatus( HttpServletResponse.SC_OK );
         response.setContentType( "binary/jdbc" );
 
@@ -152,6 +157,10 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
         }
 
         executor.waitUntilFinished();
+
+        if ( executor.hasErrors() ) {
+          throw new Exception( "There were errors in the execution of this SQL." );
+        }
       }
 
     } catch ( Exception e ) {

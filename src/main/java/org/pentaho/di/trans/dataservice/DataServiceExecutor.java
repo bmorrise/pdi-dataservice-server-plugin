@@ -59,6 +59,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DataServiceExecutor {
   private static final Class<?> PKG = DataServiceExecutor.class;
+  private final String id;
   private final Trans serviceTrans;
   private final Trans genTrans;
 
@@ -69,6 +70,7 @@ public class DataServiceExecutor {
   private final ListMultimap<ExecutionPoint, Runnable> listenerMap;
 
   private DataServiceExecutor( Builder builder ) {
+    id = builder.executorId;
     sql = builder.sql;
     service = builder.service;
     Map<String, String> param = new HashMap<>( builder.parameters );
@@ -90,6 +92,7 @@ public class DataServiceExecutor {
     private Map<String, String> parameters = Collections.emptyMap();
     private LogLevel logLevel;
     private SqlTransGenerator sqlTransGenerator;
+    private String executorId;
 
     private boolean normalizeConditions = true;
     private boolean prepareExecution = true;
@@ -186,6 +189,8 @@ public class DataServiceExecutor {
 
       serviceTrans.setContainerObjectId( UUID.randomUUID().toString() );
       genTrans.setContainerObjectId( UUID.randomUUID().toString() );
+
+      executorId = UUID.randomUUID().toString();
 
       DataServiceExecutor dataServiceExecutor = new DataServiceExecutor( this );
 
@@ -353,7 +358,8 @@ public class DataServiceExecutor {
       calculateTransname( getSql(), true ),
       getServiceTrans().getContainerObjectId(),
       calculateTransname( getSql(), false ),
-      getGenTrans().getContainerObjectId()
+      getGenTrans().getContainerObjectId(),
+      getId()
     } );
 
     final AtomicBoolean rowMetaWritten = new AtomicBoolean( false );
@@ -470,6 +476,10 @@ public class DataServiceExecutor {
     return parameters;
   }
 
+  public String getId() {
+    return id;
+  }
+
   /**
    * Calculate the name of the generated transformation based on the SQL
    *
@@ -507,6 +517,10 @@ public class DataServiceExecutor {
 
   public boolean isStopped() {
     return genTrans.isStopped();
+  }
+
+  public boolean hasErrors() {
+    return serviceTrans.getErrors() > 0 || genTrans.getErrors() > 0;
   }
 
   /**
