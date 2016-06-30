@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.sql.SQL;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.dataservice.DataServiceExecutor;
+import org.pentaho.di.trans.step.RowListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -90,6 +91,10 @@ class DualQueryService implements Query.Service {
 
     @Override public void writeTo( OutputStream outputStream ) throws IOException {
       outputStream.write( DATA );
+    }
+
+    @Override public void execute( RowListener rowListener ) {
+
     }
 
     @Override public List<Trans> getTransList() {

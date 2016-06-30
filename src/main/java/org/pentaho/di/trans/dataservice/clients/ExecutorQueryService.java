@@ -28,7 +28,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.sql.SQL;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.dataservice.DataServiceExecutor;
+import org.pentaho.di.trans.dataservice.DataServiceMeta;
 import org.pentaho.di.trans.dataservice.serialization.DataServiceFactory;
+import org.pentaho.di.trans.step.RowListener;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -47,14 +49,23 @@ class ExecutorQueryService implements Query.Service {
   }
 
   @Override public Query prepareQuery( String sqlString, int maxRows, Map<String, String> parameters ) throws KettleException {
+    return prepareQuery( sqlString, maxRows, parameters, null );
+  }
+
+  public Query prepareQuery( String sqlString, int maxRows, Map<String, String> parameters, DataServiceMeta dataServiceMeta ) throws KettleException {
     SQL sql = new SQL( sqlString );
     Query query;
     try {
-      DataServiceExecutor executor = factory.createBuilder( sql )
-        .rowLimit( maxRows )
-        .parameters( parameters )
-        .metastore( factory.getMetaStore() )
-        .build();
+      DataServiceExecutor.Builder builder;
+      if ( dataServiceMeta != null ) {
+        builder = factory.createBuilder( sql, dataServiceMeta );
+      } else {
+        builder = factory.createBuilder( sql );
+      }
+      DataServiceExecutor executor = builder.rowLimit( maxRows )
+          .parameters( parameters )
+          .metastore( factory.getMetaStore() )
+          .build();
       query = new ExecutorQuery( executor );
     } catch ( Exception e ) {
       factory.getLogChannel().logError( "Failed to execute data service " + sql.getServiceName(), e );
@@ -80,6 +91,10 @@ class ExecutorQueryService implements Query.Service {
 
     public void writeTo( OutputStream outputStream ) throws IOException {
       executor.executeQuery( asDataOutputStream( outputStream ) ).waitUntilFinished();
+    }
+
+    public void execute( RowListener rowListener ) {
+      executor.executeQuery( rowListener ).waitUntilFinished();
     }
 
     @Override public List<Trans> getTransList() {

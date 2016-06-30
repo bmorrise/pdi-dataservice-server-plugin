@@ -72,6 +72,10 @@ public class AnnotationsQueryService implements Query.Service {
       this.serviceName = serviceName;
     }
 
+    @Override public void execute( RowListener rowListener ) {
+
+    }
+
     @Override public void writeTo( final OutputStream outputStream ) throws IOException {
       try {
         ModelAnnotationGroup modelAnnotations =

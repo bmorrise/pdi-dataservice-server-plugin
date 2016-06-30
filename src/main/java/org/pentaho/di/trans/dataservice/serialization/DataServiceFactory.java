@@ -82,4 +82,8 @@ public abstract class DataServiceFactory extends DataServiceMetaStoreUtil {
     return new DataServiceExecutor.Builder( sql, dataService, context );
   }
 
+  public DataServiceExecutor.Builder createBuilder( SQL sql, DataServiceMeta dataServiceMeta ) {
+    return new DataServiceExecutor.Builder( sql, dataServiceMeta, context );
+  }
+
 }

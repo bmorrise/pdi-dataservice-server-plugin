@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.dataservice.DataServiceContext;
 import org.pentaho.di.trans.dataservice.CommandExecutor;
+import org.pentaho.di.trans.step.RowListener;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -71,6 +72,10 @@ public class CommandQueryService implements Query.Service {
 
     @Override public void writeTo( OutputStream outputStream ) throws IOException {
       executor.execute( asDataOutputStream( outputStream ) );
+    }
+
+    @Override public void execute( RowListener rowListener ) {
+
     }
 
     @Override public List<Trans> getTransList() {

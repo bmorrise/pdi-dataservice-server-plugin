@@ -24,6 +24,7 @@ package org.pentaho.di.trans.dataservice.clients;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.step.RowListener;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,6 +37,7 @@ import java.util.Map;
 public interface Query {
 
   void writeTo( OutputStream outputStream ) throws IOException;
+  void execute( RowListener rowListener );
 
   List<Trans> getTransList();
 

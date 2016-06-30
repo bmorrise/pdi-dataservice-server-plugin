@@ -28,6 +28,7 @@ import org.pentaho.caching.api.PentahoCacheManager;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.dataservice.clients.DataServiceClient;
+import org.pentaho.di.trans.dataservice.clients.DataServiceService;
 import org.pentaho.di.trans.dataservice.optimization.AutoOptimizationService;
 import org.pentaho.di.trans.dataservice.optimization.PushDownFactory;
 import org.pentaho.di.trans.dataservice.serialization.DataServiceFactory;
@@ -110,6 +111,18 @@ public class DataServiceContext {
 
   public DataServiceClient createLocalClient() {
     return new DataServiceClient( getDataServiceDelegate() );
+  }
+
+  public DataServiceClient createServiceClient( final Supplier<Repository> supplier ) {
+    return new DataServiceClient( new DataServiceFactory( this ) {
+      @Override public Repository getRepository() {
+        return supplier.get();
+      }
+    } );
+  }
+
+  public DataServiceService createServiceClient() {
+    return new DataServiceService( getDataServiceDelegate() );
   }
 
   public void addExecutor( DataServiceExecutor executor ) {

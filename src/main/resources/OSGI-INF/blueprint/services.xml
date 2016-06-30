@@ -12,6 +12,10 @@
              interface="java.util.concurrent.ExecutorService">
     </service>
 
+    <service id="dataServiceService" interface="org.pentaho.di.trans.dataservice.clients.IDataServiceService">
+        <bean factory-ref="context" factory-method="createServiceClient"/>
+    </service>
+
     <bean id="uiFactory" class="org.pentaho.di.trans.dataservice.ui.UIFactory" scope="singleton"/>
 
     <bean id="context" class="org.pentaho.di.trans.dataservice.DataServiceContext" scope="singleton">
